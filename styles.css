@@ -384,3 +384,12 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+.whatsapp-btn {
+  margin-top: 14px;
+  background: var(--green);
+}
+
+.whatsapp-btn:hover {
+  background: #166534;
+}

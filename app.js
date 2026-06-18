@@ -246,6 +246,28 @@ $("#shareBtn").addEventListener("click", async () => {
   }, 1600);
 });
 
+$("#whatsappBtn").addEventListener("click", () => {
+  const score = getScore();
+  const percentage = Math.round((score / questions.length) * 100);
+  const appUrl = getAppUrl();
+  
+  let message = `*Ayllu Ariri – Guardián de la Comunidad* 🛡️\n`;
+  message += `*Proyecto:* Seguridad escolar y comunitaria en Rosaspata, Huancané\n\n`;
+  message += `¡Hola Profesor Juan! He completado el cuestionario de Design Thinking y Emprendimiento.\n`;
+  message += `👤 *Integrante:* ${state.name}\n`;
+  message += `📝 *Puntaje:* *${score}/${questions.length}* (${percentage}%)\n\n`;
+  
+  if (score >= 9) message += `¡Excelente nivel de preparación! 🌟🚀\n`;
+  else if (score >= 7) message += `¡Buen trabajo! 👏\n`;
+  else message += `¡Seguiremos repasando y trabajando por la seguridad! 💪\n`;
+  
+  message += `\nPrueba la aplicación aquí: ${appUrl}`;
+  
+  const phone = "51900973658";
+  const encodedText = encodeURIComponent(message);
+  window.open(`https://wa.me/${phone}?text=${encodedText}`, "_blank");
+});
+
 if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
   navigator.serviceWorker.register("sw.js");
 }
