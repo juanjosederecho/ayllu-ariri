@@ -9,12 +9,12 @@ Aplicación móvil sencilla para responder 10 preguntas sobre emprendimiento, De
 3. Responder las 10 preguntas.
 4. Ver el resultado final y el QR de acceso.
 
-## Publicación sugerida en GitHub Pages
+## Enlace publicado
 
-1. Crear un repositorio en GitHub, por ejemplo `ayllu-ariri-app`.
-2. Subir todos los archivos de esta carpeta.
-3. En GitHub, entrar a **Settings > Pages**.
-4. Elegir la rama principal y la carpeta raíz.
-5. Abrir la URL publicada. El QR final apuntará a esa URL.
+La aplicación está publicada en:
+
+https://juanjosederecho.github.io/ayllu-ariri/
+
+El QR final de la aplicación apunta a esa misma dirección.
 
 No compartas contraseñas por chat. Para publicar desde una computadora, usa el inicio de sesión oficial de GitHub o un token personal.
