@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ayllu Ariri - Cuestionario de Emprendimiento</title>
+    <meta name="description" content="Cuestionario sobre emprendimiento y Design Thinking para el proyecto Ayllu Ariri - Guardián de la Comunidad en Rosaspata, Huancané.">
+    
+    <!-- Google Fonts: Fredoka & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Estilos -->
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --primary-dark: #3730a3;
+            --secondary: #f97316; /* Orange for safety/alert theme */
+            --secondary-light: #ffedd5;
+            --secondary-dark: #c2410c;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --success-dark: #065f46;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --error-dark: #991b1b;
+            --background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); /* Dark theme gradient */
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-dark);
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Confetti canvas overlay */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo / Header */
+        .app-logo {
+            font-size: 3.5rem;
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        /* Info Rules Card */
+        .info-card {
+            background: var(--primary-light);
+            border-radius: var(--border-radius-md);
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: #1e1b4b;
+            text-align: left;
+            line-height: 1.5;
+            border-left: 5px solid var(--primary);
+        }
+
+        .info-card ul {
+            margin-left: 18px;
+            margin-top: 6px;
+        }
+
+        /* Input Styles */
+        .input-group {
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-light);
+            border-radius: var(--border-radius-md);
+            background: rgba(255, 255, 255, 0.8);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .text-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+            background: #ffffff;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Progress Bar */
+        .quiz-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: var(--primary-light);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+
+        /* Question Box */
+        .question-card {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 8px;
+        }
+
+        .question-emoji {
+            font-size: 4rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            display: inline-block;
+        }
+
+        .question-prompt {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .question-instruction {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: rgba(79, 70, 229, 0.08);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        /* Option Buttons */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: var(--border-radius-md);
+            padding: 12px 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow-sm);
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            transform: translateX(4px);
+            background: var(--primary-light);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .option-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .option-text {
+            flex-grow: 1;
+            line-height: 1.3;
+            color: var(--text-dark);
+        }
+
+        /* Option States after clicking */
+        .option-btn.correct {
+            border-color: var(--success);
+            background-color: var(--success-light);
+            color: var(--success-dark);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+        }
+
+        .option-btn.correct .option-badge {
+            background: var(--success);
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--error);
+            background-color: var(--error-light);
+            color: var(--error-dark);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+        }
+
+        .option-btn.incorrect .option-badge {
+            background: var(--error);
+            color: white;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option-btn.correct:disabled, .option-btn.incorrect:disabled {
+            opacity: 1;
+        }
+
+        /* Feedback Footer */
+        .action-container {
+            min-height: 52px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Score & Results Page */
+        .result-score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+            border: 4px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            box-shadow: var(--shadow-md);
+            animation: pulseCircle 2s infinite alternate;
+        }
+
+        @keyframes pulseCircle {
+            0% { transform: scale(1); box-shadow: var(--shadow-md); }
+            100% { transform: scale(1.04); box-shadow: 0 12px 20px rgba(79, 70, 229, 0.15); }
+        }
+
+        .score-number {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary-dark);
+            line-height: 1;
+        }
+
+        .score-max {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .performance-badge {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.4rem;
+            color: var(--secondary-dark);
+            margin-bottom: 8px;
+        }
+
+        .feedback-message {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .result-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        /* QR Section */
+        .qr-section {
+            background: #f8fafc;
+            border: 1px dashed var(--primary);
+            border-radius: var(--border-radius-md);
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .qr-title {
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .qr-image {
+            width: 160px;
+            height: 160px;
+            margin: 8px auto;
+            display: block;
+            border-radius: 8px;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .qr-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Table Summary */
+        .summary-section {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+            text-align: left;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+            font-family: 'Fredoka', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        /* Scrollbar styles */
+        .summary-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .summary-list::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        .summary-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            padding: 10px 12px;
+            border-radius: var(--border-radius-md);
+            font-size: 0.85rem;
+            gap: 10px;
+        }
+
+        .summary-item.correct {
+            border-left: 4px solid var(--success);
+        }
+
+        .summary-item.incorrect {
+            border-left: 4px solid var(--error);
+        }
+
+        .summary-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .summary-content {
+            flex-grow: 1;
+        }
+
+        .summary-content strong {
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .summary-content span {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.correct {
+            background: var(--success-light);
+            color: var(--success-dark);
+        }
+
+        .status-badge.incorrect {
+            background: var(--error-light);
+            color: var(--error-dark);
+        }
+
+        /* Lock Screen */
+        .lock-container {
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Footer Info */
+        .app-footer {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .whatsapp-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div id="app-container">
+        <!-- PANTALLA 1: REGISTRO / INICIO -->
+        <div id="screen-welcome" class="screen active text-center">
+            <div class="app-logo">🛡️</div>
+            <h1 class="welcome-title" id="main-heading">Ayllu Ariri</h1>
+            <p class="welcome-subtitle">Guardián de la Comunidad &bull; Rosaspata, Huancané</p>
+            
+            <div class="info-card">
+                <strong>Instrucciones del cuestionario:</strong>
+                <ul>
+                    <li>Responderás <strong>10 preguntas</strong> clave.</li>
+                    <li>Aprenderás sobre Seguridad Comunitaria y Design Thinking.</li>
+                    <li>Solo tienes <strong>1 intento</strong> para realizar la prueba.</li>
+                    <li>Al terminar, podrás compartir tus resultados por WhatsApp y escanear el QR para móviles.</li>
+                </ul>
+            </div>
+
+            <div class="input-group">
+                <label for="student-name" class="input-label" id="name-input-label">Escribe tu nombre (Integrante del equipo):</label>
+                <input type="text" id="student-name" class="text-input" placeholder="Ej. Juan Pérez" autocomplete="off">
+            </div>
+
+            <button id="btn-start" class="btn btn-primary" onclick="startQuiz()">
+                Iniciar Cuestionario 🚀
+            </button>
+        </div>
+
+        <!-- PANTALLA 2: PREGUNTAS -->
+        <div id="screen-quiz" class="screen">
+            <div class="quiz-header">
+                <div class="quiz-meta">
+                    <span id="quiz-student-display">Integrante: -</span>
+                    <span id="quiz-progress-text">Pregunta 1 de 10</span>
+                </div>
+                <div class="progress-container">
+                    <div id="quiz-progress-bar" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div id="question-emoji" class="question-emoji">🛡️</div>
+                <div id="question-prompt" class="question-prompt">Pregunta de Emprendimiento</div>
+                <div id="question-text" class="question-text">¿Qué significa Ayllu Ariri?</div>
+                <div id="question-instruction" class="question-instruction">Selecciona la respuesta correcta:</div>
+            </div>
+
+            <div class="options-list">
+                <button class="option-btn" onclick="selectOption(0)" id="btn-option-0">
+                    <span class="option-badge">A</span>
+                    <span class="option-text" id="option-0">Opción 1</span>
+                </button>
+                <button class="option-btn" onclick="selectOption(1)" id="btn-option-1">
+                    <span class="option-badge">B</span>
+                    <span class="option-text" id="option-1">Opción 2</span>
+                </button>
+                <button class="option-btn" onclick="selectOption(2)" id="btn-option-2">
+                    <span class="option-badge">C</span>
+                    <span class="option-text" id="option-2">Opción 3</span>
+                </button>
+                <button class="option-btn" onclick="selectOption(3)" id="btn-option-3">
+                    <span class="option-badge">D</span>
+                    <span class="option-text" id="option-3">Opción 4</span>
+                </button>
+                <button class="option-btn" onclick="selectOption(4)" id="btn-option-4">
+                    <span class="option-badge">E</span>
+                    <span class="option-text" id="option-4">Opción 5</span>
+                </button>
+            </div>
+
+            <div class="action-container">
+                <button id="btn-next" class="btn btn-primary" style="display: none;" onclick="nextQuestion()">
+                    Siguiente Pregunta ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS -->
+        <div id="screen-results" class="screen text-center">
+            <div class="app-logo">🎉</div>
+            <h2 class="welcome-title">Cuestionario Completado</h2>
+            <p id="result-student-name" style="font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">Integrante: -</p>
+            
+            <div class="result-score-circle">
+                <span id="result-score" class="score-number">0</span>
+                <span class="score-max">de 10</span>
+            </div>
+
+            <div id="result-badge" class="performance-badge">¡Excelente!</div>
+            <p id="result-feedback" class="feedback-message">¡Has demostrado un gran entendimiento sobre Design Thinking y seguridad!</p>
+
+            <div class="result-actions">
+                <!-- WhatsApp Share Button -->
+                <button class="btn btn-success" id="btn-share-whatsapp" onclick="shareOnWhatsApp()">
+                    <svg class="whatsapp-icon" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.436 0 9.851-4.388 9.854-9.778.002-2.611-1.013-5.067-2.86-6.92C16.37 2.062 13.914.979 12.006.979c-5.437 0-9.857 4.388-9.86 9.779-.001 1.933.51 3.818 1.482 5.502l-.986 3.606 3.738-.975c1.61.988 3.013 1.258 4.267 1.258zm9.141-6.195c-.272-.137-1.614-.8-1.861-.89-.246-.089-.427-.133-.607.137-.18.271-.696.89-.854 1.069-.158.178-.316.202-.588.066-.272-.137-1.15-.425-2.193-1.355-.812-.727-1.36-1.624-1.52-1.899-.16-.272-.017-.419.119-.554.123-.122.272-.32.408-.48.136-.16.18-.274.272-.457.091-.183.045-.343-.023-.48-.068-.137-.607-1.472-.832-2.015-.22-.53-.44-.457-.607-.466-.157-.008-.337-.009-.517-.009-.18 0-.473.069-.72.343-.247.273-.945.926-.945 2.259 0 1.332.969 2.62 1.103 2.804.135.183 1.906 2.923 4.617 4.103.645.281 1.148.45 1.541.577.649.206 1.24.177 1.707.107.521-.078 1.614-.662 1.839-1.302.226-.641.226-1.189.157-1.302-.067-.113-.248-.18-.521-.317z"/>
+                    </svg>
+                    Compartir con el Equipo por WhatsApp
+                </button>
+            </div>
+
+            <!-- QR SECTION -->
+            <div class="qr-section">
+                <p class="qr-title" id="qr-section-title">📱 Accede desde tu móvil</p>
+                <img id="qr-code-img" class="qr-image" src="" alt="Código QR">
+                <p class="qr-text" id="qr-section-text">Escanea este código para ingresar o compartir</p>
+            </div>
+
+            <!-- DETALLE DE PREGUNTAS -->
+            <div class="summary-section">
+                <h3 class="summary-title">🔍 Resumen de tus respuestas:</h3>
+                <div id="results-summary-list" class="summary-list">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA 4: BLOQUEO POR COMPLETADO -->
+        <div id="screen-locked" class="screen text-center">
+            <div class="lock-icon">🔒</div>
+            <h2 class="welcome-title">Cuestionario Ya Realizado</h2>
+            <p class="welcome-subtitle">Solo se permite un intento para este cuestionario.</p>
+            
+            <div class="info-card" style="text-align: center;">
+                Has completado la evaluación de <strong>Ayllu Ariri</strong>. Puedes ver tus resultados anteriores haciendo clic abajo.
+            </div>
+
+            <div class="result-actions" style="margin-top: 24px;">
+                <button class="btn btn-primary" onclick="showPastResults()" id="btn-show-past">
+                    Ver mis resultados anteriores 📊
+                </button>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="app-footer">
+            Ayllu Ariri &bull; Rosaspata &bull; 2026
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        // --- BASE DE DATOS DE LAS 10 PREGUNTAS SOBRE AYLLU ARIRI ---
+        const quizData = [
+            {
+                id: 1,
+                question: "¿Qué significa “Ayllu Ariri” en el proyecto de emprendimiento?",
+                options: [
+                    "Vendedor de productos escolares",
+                    "Guardián de la comunidad",
+                    "Juego para estudiantes",
+                    "Nombre de una tienda",
+                    "Grupo de música escolar"
+                ],
+                correctIdx: 1, // B
+                emoji: "🛡️"
+            },
+            {
+                id: 2,
+                question: "¿Cuál es el problema principal que busca solucionar el emprendimiento “Ayllu Ariri”?",
+                options: [
+                    "La falta de juegos en el colegio",
+                    "La inseguridad o incidencias dentro del colegio y la comunidad",
+                    "La falta de tareas escolares",
+                    "La venta de alimentos saludables",
+                    "La limpieza de las aulas"
+                ],
+                correctIdx: 1, // B
+                emoji: "🚨"
+            },
+            {
+                id: 3,
+                question: "En Design Thinking, la etapa de “empatizar” sirve para:",
+                options: [
+                    "Vender el producto rápidamente",
+                    "Copiar ideas de otros colegios",
+                    "Comprender las necesidades y problemas de las personas",
+                    "Elegir el color del logo",
+                    "Hacer publicidad en redes sociales"
+                ],
+                correctIdx: 2, // C
+                emoji: "🤝"
+            },
+            {
+                id: 4,
+                question: "Para empatizar con la comunidad de Rosaspata, los estudiantes podrían:",
+                options: [
+                    "Preguntar a estudiantes, docentes y vecinos qué problemas de seguridad observan",
+                    "Inventar problemas sin preguntar a nadie",
+                    "Comprar materiales sin planificar",
+                    "Hacer solo dibujos del proyecto",
+                    "Pensar únicamente en ganar dinero"
+                ],
+                correctIdx: 0, // A
+                emoji: "💬"
+            },
+            {
+                id: 5,
+                question: "¿Cuál sería una buena propuesta de valor para “Ayllu Ariri”?",
+                options: [
+                    "Una aplicación o botón que ayude a reportar incidencias en tiempo real",
+                    "Una página para vender ropa",
+                    "Un concurso de canto escolar",
+                    "Una tienda de golosinas",
+                    "Un juego sin relación con la seguridad"
+                ],
+                correctIdx: 0, // A
+                emoji: "📱"
+            },
+            {
+                id: 6,
+                question: "En Design Thinking, la etapa de “definir” consiste en:",
+                options: [
+                    "Identificar claramente el problema que se quiere resolver",
+                    "Comprar todos los materiales",
+                    "Presentar el proyecto sin investigarlo",
+                    "Pintar carteles decorativos",
+                    "Elegir al azar una idea"
+                ],
+                correctIdx: 0, // A
+                emoji: "📌"
+            },
+            {
+                id: 7,
+                question: "Si los estudiantes crean muchas ideas para mejorar la seguridad, están trabajando la etapa de:",
+                options: [
+                    "Evaluar",
+                    "Idear",
+                    "Vender",
+                    "Archivar",
+                    "Copiar"
+                ],
+                correctIdx: 1, // B
+                emoji: "💡"
+            },
+            {
+                id: 8,
+                question: "¿Qué sería un prototipo del proyecto “Ayllu Ariri”?",
+                options: [
+                    "Una maqueta, dibujo, formulario o botón de alerta de prueba",
+                    "Un cuaderno sin información",
+                    "Una lista de asistencia",
+                    "Una tarea de matemática",
+                    "Un afiche sin explicación"
+                ],
+                correctIdx: 0, // A
+                emoji: "🛠️"
+            },
+            {
+                id: 9,
+                question: "¿Por qué es importante probar el botón de alerta antes de usarlo oficialmente?",
+                options: [
+                    "Para saber si funciona bien y si realmente ayuda a reportar incidencias",
+                    "Para perder tiempo en clase",
+                    "Para evitar escuchar opiniones",
+                    "Para cambiar el nombre del colegio",
+                    "Para no mejorar el proyecto"
+                ],
+                correctIdx: 0, // A
+                emoji: "🔄"
+            },
+            {
+                id: 10,
+                question: "¿Qué actitud emprendedora deben mostrar los estudiantes al desarrollar “Ayllu Ariri”?",
+                options: [
+                    "Trabajar en equipo, observar problemas reales y buscar soluciones útiles",
+                    "Esperar que otros hagan todo",
+                    "Burlarse de las ideas de sus compañeros",
+                    "Copiar proyectos sin mejorarlos",
+                    "Abandonar el proyecto cuando hay dificultades"
+                ],
+                correctIdx: 0, // A
+                emoji: "👥"
+            }
+        ];
+
+        // --- ESTADO GLOBAL DE LA APP ---
+        let studentName = "";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let examResults = []; // Registro de respuestas { question, selectedIdx, correctIdx, options, isCorrect }
+        
+        // --- WEB AUDIO API (EFECTOS DE SONIDO SINTETIZADOS) ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                
+                const now = audioCtx.currentTime;
+                
+                if (type === 'correct') {
+                    // Beep alegre de 2 notas (C5 -> E5)
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.12, now + 0.04);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                    gain2.gain.setValueAtTime(0, now + 0.08);
+                    gain2.gain.linearRampToValueAtTime(0.12, now + 0.12);
+                    gain2.gain.linearRampToValueAtTime(0, now + 0.32);
+                    osc2.start(now + 0.08);
+                    osc2.stop(now + 0.32);
+                } else if (type === 'incorrect') {
+                    // Tono bajo descendente
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.exponentialRampToValueAtTime(110, now + 0.25); // A2
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'victory') {
+                    // Melodía triunfal corta
+                    const melody = [
+                        { note: 523.25, duration: 0.08 }, // C5
+                        { note: 587.33, duration: 0.08 }, // D5
+                        { note: 659.25, duration: 0.08 }, // E5
+                        { note: 783.99, duration: 0.25 }  // G5
+                    ];
+                    let delay = 0;
+                    melody.forEach(item => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.type = 'sine';
+                        o.frequency.setValueAtTime(item.note, now + delay);
+                        g.gain.setValueAtTime(0, now + delay);
+                        g.gain.linearRampToValueAtTime(0.12, now + delay + 0.02);
+                        g.gain.linearRampToValueAtTime(0, now + delay + item.duration);
+                        o.start(now + delay);
+                        o.stop(now + delay + item.duration);
+                        delay += item.duration + 0.02;
+                    });
+                }
+            } catch (e) {
+                console.error("Audio error: ", e);
+            }
+        }
+
+        // --- SISTEMA DE CONFETTI ---
+        let confettiAnimationId = null;
+        function launchConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }, { passive: true });
+
+            let particles = [];
+            const colors = ['#4f46e5', '#f97316', '#10b981', '#f59e0b', '#3b82f6', '#ec4899'];
+            
+            for (let i = 0; i < 120; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 4,
+                    d: Math.random() * canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.06 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+            
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, index) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2.5;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - index/3) * 12;
+                    
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+                
+                update();
+            }
+            
+            function update() {
+                let remaining = 0;
+                particles.forEach(p => {
+                    if (p.y < canvas.height) {
+                        remaining++;
+                    }
+                });
+                if (remaining > 0) {
+                    confettiAnimationId = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            
+            if (confettiAnimationId) {
+                cancelAnimationFrame(confettiAnimationId);
+            }
+            draw();
+        }
+
+        // --- INICIALIZACIÓN ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const completed = localStorage.getItem('ayllu_ariri_completado');
+            if (completed === 'true') {
+                showScreen('screen-locked');
+            }
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(scr => {
+                scr.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startQuiz() {
+            const inputName = document.getElementById('student-name');
+            studentName = inputName.value.trim();
+            
+            if (studentName.length < 3) {
+                alert("Por favor, ingresa tu nombre completo (como integrante del equipo).");
+                inputName.focus();
+                return;
+            }
+
+            initAudio();
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            examResults = [];
+            
+            document.getElementById('quiz-student-display').innerText = "Integrante: " + studentName;
+            
+            renderQuestion();
+            showScreen('screen-quiz');
+        }
+
+        // --- RENDERIZADO DE PREGUNTAS ---
+        function renderQuestion() {
+            const currentItem = quizData[currentQuestionIndex];
+            const progressPercent = (currentQuestionIndex / quizData.length) * 100;
+            
+            document.getElementById('quiz-progress-bar').style.width = progressPercent + "%";
+            document.getElementById('quiz-progress-text').innerText = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            
+            document.getElementById('btn-next').style.display = 'none';
+            
+            const emojiEl = document.getElementById('question-emoji');
+            const questionEl = document.getElementById('question-text');
+            
+            emojiEl.innerText = currentItem.emoji;
+            questionEl.innerText = currentItem.question;
+            
+            const alphabet = ['A', 'B', 'C', 'D', 'E'];
+            for (let i = 0; i < 5; i++) {
+                const btn = document.getElementById(`btn-option-${i}`);
+                btn.className = 'option-btn';
+                btn.disabled = false;
+                
+                const badge = btn.querySelector('.option-badge');
+                badge.innerText = alphabet[i];
+                
+                const text = btn.querySelector('.option-text');
+                text.innerText = currentItem.options[i];
+            }
+        }
+
+        // --- SELECCIÓN DE OPCIÓN ---
+        function selectOption(selectedIdx) {
+            const currentItem = quizData[currentQuestionIndex];
+            const correctIdx = currentItem.correctIdx;
+            
+            for (let i = 0; i < 5; i++) {
+                const btn = document.getElementById(`btn-option-${i}`);
+                btn.disabled = true;
+                if (i === correctIdx) {
+                    btn.classList.add('correct');
+                } else if (i === selectedIdx) {
+                    btn.classList.add('incorrect');
+                }
+            }
+            
+            const isCorrect = (selectedIdx === correctIdx);
+            
+            if (isCorrect) {
+                playSound('correct');
+                score++;
+            } else {
+                playSound('incorrect');
+            }
+            
+            examResults.push({
+                question: currentItem,
+                selectedIdx: selectedIdx,
+                correctIdx: correctIdx,
+                isCorrect: isCorrect
+            });
+            
+            document.getElementById('btn-next').style.display = 'inline-flex';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            localStorage.setItem('ayllu_ariri_completado', 'true');
+            localStorage.setItem('ayllu_ariri_integrante', studentName);
+            localStorage.setItem('ayllu_ariri_puntaje', score);
+            localStorage.setItem('ayllu_ariri_detalles', JSON.stringify(examResults));
+            
+            displayResults();
+        }
+
+        function displayResults() {
+            const savedName = localStorage.getItem('ayllu_ariri_integrante') || studentName;
+            const savedScore = parseInt(localStorage.getItem('ayllu_ariri_puntaje') || score, 10);
+            const savedResults = JSON.parse(localStorage.getItem('ayllu_ariri_detalles') || JSON.stringify(examResults));
+            
+            document.getElementById('result-student-name').innerText = "Integrante: " + savedName;
+            document.getElementById('result-score').innerText = savedScore;
+            
+            const badgeEl = document.getElementById('result-badge');
+            const feedbackEl = document.getElementById('result-feedback');
+            
+            if (savedScore >= 9) {
+                badgeEl.innerText = "¡Excelente Guardián! 🏆🛡️";
+                badgeEl.style.color = "var(--success)";
+                feedbackEl.innerText = "¡Soberbio! Has demostrado comprender a la perfección el proyecto de seguridad y las etapas del Design Thinking.";
+                playSound('victory');
+                launchConfetti();
+            } else if (savedScore >= 7) {
+                badgeEl.innerText = "¡Buen Trabajo! 👏";
+                badgeEl.style.color = "var(--primary)";
+                feedbackEl.innerText = "¡Muy bien! Tienes bases muy sólidas de emprendimiento y la propuesta del proyecto Ayllu Ariri.";
+                playSound('victory');
+                launchConfetti();
+            } else {
+                badgeEl.innerText = "¡Sigue Aprendiendo! 💪";
+                badgeEl.style.color = "var(--secondary-dark)";
+                feedbackEl.innerText = "Puedes repasar los conceptos de empatizar, definir, idear y prototipar para mejorar tus respuestas.";
+            }
+
+            // --- CÓDIGO QR ---
+            // Generar el código QR apuntando a la URL final en GitHub Pages
+            const targetUrl = "https://juanjosederecho.github.io/ayllu-ariri/";
+            document.getElementById('qr-code-img').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(targetUrl)}`;
+
+            // --- DETALLES DE PREGUNTAS ---
+            const listEl = document.getElementById('results-summary-list');
+            listEl.innerHTML = '';
+            
+            savedResults.forEach((res, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `summary-item ${res.isCorrect ? 'correct' : 'incorrect'}`;
+                
+                const emojiSpan = document.createElement('span');
+                emojiSpan.className = 'summary-icon';
+                emojiSpan.innerText = res.question.emoji;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'summary-content';
+                
+                const selectedText = res.question.options[res.selectedIdx];
+                const correctText = res.question.options[res.correctIdx];
+                
+                contentDiv.innerHTML = `
+                    <strong>${idx + 1}. ${res.question.question}</strong>
+                    <span>Tu respuesta: ${selectedText} ${res.isCorrect ? '' : ` &bull; Correcta: ${correctText}`}</span>
+                `;
+                
+                const statusSpan = document.createElement('span');
+                statusSpan.className = `status-badge ${res.isCorrect ? 'correct' : 'incorrect'}`;
+                statusSpan.innerText = res.isCorrect ? 'Bien' : 'Mal';
+                
+                itemDiv.appendChild(emojiSpan);
+                itemDiv.appendChild(contentDiv);
+                itemDiv.appendChild(statusSpan);
+                
+                listEl.appendChild(itemDiv);
+            });
+            
+            showScreen('screen-results');
+        }
+
+        // --- WHATSAPP SHARE ---
+        function shareOnWhatsApp() {
+            const savedName = localStorage.getItem('ayllu_ariri_integrante') || studentName;
+            const savedScore = parseInt(localStorage.getItem('ayllu_ariri_puntaje') || score, 10);
+            
+            let message = `*Ayllu Ariri – Guardián de la Comunidad* 🛡️\n`;
+            message += `*Proyecto:* Seguridad escolar y comunitaria en Rosaspata, Huancané\n\n`;
+            message += `¡Hola! He completado el cuestionario de Design Thinking y Emprendimiento.\n`;
+            message += `👤 *Integrante:* ${savedName}\n`;
+            message += `📝 *Puntaje:* *${savedScore}/10*\n\n`;
+            
+            if (savedScore >= 9) message += `¡Excelente nivel de preparación! 🌟🚀\n`;
+            else message += `¡Sigamos trabajando por la seguridad del colegio! 💪\n`;
+            
+            message += `\nPrueba la aplicación aquí: https://juanjosederecho.github.io/ayllu-ariri/`;
+            
+            const encodedText = encodeURIComponent(message);
+            window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+        }
+
+        function showPastResults() {
+            displayResults();
+        }
+    </script>
+</body>
+</html>

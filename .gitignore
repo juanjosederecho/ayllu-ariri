@@ -1,0 +1,6 @@
+*.pptx
+*.docx
+*.xlsx
+.git/
+.agents/
+.gemini/
