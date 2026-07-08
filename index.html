@@ -2,87 +2,630 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0f766e" />
-    <title>Ayllu Ariri</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#15803d" />
+    <title>Guardianes de la Comunidad — Ayllu Ariri</title>
+    <meta name="description" content="Aplicación Web Progresiva para el cuidado del medio ambiente en Rosaspata, Huancané. Creada para el Concurso de Crédito 2026." />
+    
+    <!-- PWA Web Manifest -->
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet.js (Mapas) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <section class="top-panel" aria-label="Presentación">
-        <div>
-          <p class="eyebrow">Seguridad escolar y comunitaria</p>
-          <h1>Ayllu Ariri</h1>
-          <p class="subtitle">Guardián de la comunidad</p>
-        </div>
-        <div class="score-chip" id="progressText">0/10</div>
-      </section>
-
-      <section class="screen active" id="startScreen">
-        <div class="intro-band">
-          <h2>Rosaspata, Huancané</h2>
-          <p>Ingresa el nombre de un integrante para iniciar las preguntas.</p>
-        </div>
-        <form id="startForm" class="form-panel">
-          <label for="studentName">Nombre del integrante</label>
-          <input id="studentName" name="studentName" type="text" autocomplete="name" placeholder="Escribe un nombre" required />
-          <button type="submit">Iniciar evaluación</button>
-        </form>
-      </section>
-
-      <section class="screen" id="quizScreen" aria-live="polite">
-        <div class="quiz-meta">
-          <span id="studentBadge"></span>
-          <span id="questionNumber"></span>
-        </div>
-        <article class="question-panel">
-          <h2 id="questionText"></h2>
-          <div class="answers" id="answers"></div>
-        </article>
-        <div class="actions">
-          <button type="button" class="secondary" id="backBtn">Anterior</button>
-          <button type="button" id="nextBtn">Siguiente</button>
-        </div>
-      </section>
-
-      <section class="screen" id="resultScreen">
-        <div class="result-panel">
-          <p class="eyebrow">Resultado final</p>
-          <h2 id="resultTitle"></h2>
-          <p id="resultCopy"></p>
-          <div class="result-grid">
+    <!-- App Shell -->
+    <div class="app-container">
+      
+      <!-- Cabecera de la Aplicación -->
+      <header class="app-header" role="banner">
+        <div class="header-content">
+          <div class="header-logo">
+            <img src="assets/icon.svg" alt="Ayllu Ariri Logo" class="app-logo-img" />
             <div>
-              <span class="result-label">Puntaje</span>
-              <strong id="scoreValue"></strong>
+              <h1 id="app-title">Ayllu Ariri</h1>
+              <p class="app-subtitle" id="app-subtitle">Guardián de la Comunidad</p>
             </div>
-            <div>
-              <span class="result-label">Integrante</span>
-              <strong id="resultName"></strong>
+          </div>
+          <div class="header-actions">
+            <!-- Selector de Accesibilidad (Voz y Texto Ampliado) -->
+            <button id="accessibility-btn" class="icon-btn" aria-label="Opciones de accesibilidad" title="Accesibilidad">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+            </button>
+            <div class="status-indicator online" id="connection-status" title="Conexión activa">
+              <span class="status-dot"></span>
+              <span class="status-text">En línea</span>
             </div>
           </div>
         </div>
-
-        <div class="review-panel">
-          <h3>Respuestas correctas</h3>
-          <div id="reviewList"></div>
+        
+        <!-- Panel Desplegable de Accesibilidad -->
+        <div id="accessibility-panel" class="accessibility-panel hidden" aria-hidden="true">
+          <h3>Opciones de Accesibilidad</h3>
+          <div class="acc-control">
+            <label for="font-size-toggle">Tamaño del Texto:</label>
+            <div class="btn-group">
+              <button id="font-normal-btn" class="acc-btn active">Normal</button>
+              <button id="font-large-btn" class="acc-btn">Ampliado 🔍</button>
+            </div>
+          </div>
+          <div class="acc-control">
+            <label for="voice-toggle">Lectura por Voz (Text-to-Speech):</label>
+            <button id="voice-toggle-btn" class="acc-btn">Desactivado 🔇</button>
+          </div>
+          <div class="acc-info">
+            <p>La lectura por voz lee en voz alta las opciones del menú y respuestas del chatbot al pasar el cursor o hacer tap. Puedes pulsar los iconos de altavoz 🔊 en la app.</p>
+          </div>
         </div>
+      </header>
 
-        <div class="qr-panel">
-          <h3>QR de acceso</h3>
-          <img id="qrImage" alt="Código QR para acceder a la aplicación" />
-          <p id="appUrl"></p>
-        </div>
+      <!-- Botón de Pánico Flotante (Reportar Basura) -->
+      <button id="panic-report-btn" class="panic-btn" aria-label="Botón de Pánico: Reportar Basura Ahora">
+        <span class="panic-btn-icon">🚨</span>
+        <span class="panic-btn-text">Reportar ahora</span>
+      </button>
 
-        <button type="button" id="whatsappBtn" class="whatsapp-btn">Enviar resultados al profesor Juan</button>
-        <div class="actions">
-          <button type="button" class="secondary" id="restartBtn">Reiniciar</button>
-          <button type="button" id="shareBtn">Compartir</button>
-        </div>
-      </section>
-    </main>
+      <!-- Zona de Contenido Principal -->
+      <main class="app-main" id="main-content" role="main">
+        
+        <!-- PANTALLA 1: INICIO -->
+        <section id="screen-inicio" class="app-screen active" aria-labelledby="title-inicio">
+          <div class="hero-card">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="badge" id="school-badge">I.E. Rosaspata - 4to A</span>
+              <h2 id="title-inicio" class="decorative-title">Bienvenido a Ayllu Ariri</h2>
+              <p>Promovemos la protección ambiental y cuidado de nuestra tierra mediante el reporte de residuos y participación ciudadana.</p>
+              <button class="cta-btn primary-cta" id="inicio-cta-report">
+                <span>🚨 Hacer un Reporte Urgente</span>
+              </button>
+            </div>
+          </div>
 
+          <!-- Resumen del Impacto y Logros -->
+          <div class="summary-section">
+            <h3 class="section-title">Logros de Nuestra Comunidad</h3>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <span class="stat-icon">🗑️</span>
+                <span class="stat-number" id="stat-total-basura">120 kg</span>
+                <span class="stat-label">Basura recogida</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">✔️</span>
+                <span class="stat-number" id="stat-reportes-resueltos">14</span>
+                <span class="stat-label">Reportes atendidos</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">🤝</span>
+                <span class="stat-number" id="stat-faenas-comunidad">3</span>
+                <span class="stat-label">Faenas realizadas</span>
+              </div>
+              <div class="stat-card">
+                <span class="stat-icon">🟢</span>
+                <span class="stat-number" id="stat-wiphalas-totales">45</span>
+                <span class="stat-label">Wiphalas Verdes</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje Cultural del Día -->
+          <div class="cultural-card">
+            <div class="cultural-icon">🌾</div>
+            <div>
+              <h4>Reflexión Andina</h4>
+              <p id="cultural-quote">"Kamachikuni Pachamamata uñjañataki" (Es nuestro deber cuidar a la Madre Tierra).</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 2: CHATBOT -->
+        <section id="screen-chatbot" class="app-screen" aria-labelledby="title-chatbot">
+          <div class="chatbot-container">
+            <div class="chatbot-header">
+              <div class="chat-avatar">🤖</div>
+              <div>
+                <h2 id="title-chatbot">Ariri: Consejero Ambiental</h2>
+                <p class="chat-status">Pregúntame en Castellano o Aymara</p>
+              </div>
+              <button id="read-chat-help" class="speaker-btn" aria-label="Leer instrucciones en voz alta">🔊</button>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages" aria-live="polite">
+              <div class="message system">
+                Hola, soy Ariri, el guardián ambiental del Ayllu. Puedo ayudarte con dudas sobre degradación de basura, cuidado del lago Titicaca, fechas de recojo y glosario aymara. ¿De qué te gustaría hablar?
+              </div>
+            </div>
+            
+            <!-- Chips de Respuestas Rápidas -->
+            <div class="chat-chips" id="chat-chips">
+              <button class="chip-btn" data-query="¿Cuánto tarda en degradarse el plástico?">🗑️ Plásticos</button>
+              <button class="chip-btn" data-query="¿Cómo cuidar el lago Titicaca?">💧 Lago Titicaca</button>
+              <button class="chip-btn" data-query="¿Cuándo pasa el camión de la basura?">🚛 Horarios de Recojo</button>
+              <button class="chip-btn" data-query="Glosario Aymara">📚 Glosario Aymara</button>
+              <button class="chip-btn" data-query="¿Cómo hacer abono compost?">🍂 Compostaje</button>
+            </div>
+
+            <!-- Entrada de Texto y Voz -->
+            <form id="chat-form" class="chat-input-area">
+              <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí..." aria-label="Escribe tu consulta" />
+              <button type="button" id="chat-mic-btn" class="chat-btn mic" aria-label="Dictar mensaje por voz" title="Dictar por voz">
+                🎤
+              </button>
+              <button type="submit" class="chat-btn send" aria-label="Enviar mensaje">
+                ➡️
+              </button>
+            </form>
+          </div>
+          
+          <!-- Glosario Bilingüe Rápido -->
+          <div class="glossary-section">
+            <h3 class="section-title">Glosario Ambiental Aymara</h3>
+            <div class="glossary-search">
+              <input type="text" id="glossary-search-input" placeholder="Buscar término..." aria-label="Buscar en el glosario" />
+            </div>
+            <div class="glossary-grid" id="glossary-container">
+              <!-- Cargado dinámicamente -->
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 3: REPORTAR -->
+        <section id="screen-reportar" class="app-screen" aria-labelledby="title-reportar">
+          <div class="form-container">
+            <h2 id="title-reportar" class="decorative-title">Reportar Incidencia de Contaminación</h2>
+            <p class="form-desc">Envía un reporte para alertar al municipio y la escuela. Si no tienes internet, el reporte se guardará en tu celular y se enviará cuando recuperes la señal.</p>
+            
+            <form id="report-form" class="standard-form">
+              <!-- Captura de Foto -->
+              <div class="form-group">
+                <label>Foto de la Contaminación <span class="required">*</span></label>
+                <div class="photo-capture-container">
+                  <div class="photo-preview" id="photo-preview-box">
+                    <span class="preview-placeholder">Sin foto seleccionada</span>
+                  </div>
+                  <div class="photo-buttons">
+                    <button type="button" id="camera-btn" class="form-btn secondary">📷 Usar Cámara</button>
+                    <button type="button" id="gallery-btn" class="form-btn secondary">📁 Subir de Galería</button>
+                    <input type="file" id="photo-file-input" accept="image/*" class="hidden" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Categoría -->
+              <div class="form-group">
+                <label for="report-category">Categoría <span class="required">*</span></label>
+                <select id="report-category" required>
+                  <option value="" disabled selected>Selecciona una opción...</option>
+                  <option value="Basura acumulada">🗑️ Basura acumulada</option>
+                  <option value="Quema de residuos">🔥 Quema de residuos</option>
+                  <option value="Vertimiento en río/acequia">💧 Vertimiento en río/acequia</option>
+                  <option value="Tala de árboles">🌳 Tala de árboles</option>
+                  <option value="Contaminación de bofedales">🌱 Contaminación de bofedales</option>
+                </select>
+              </div>
+
+              <!-- Nivel de Urgencia -->
+              <div class="form-group">
+                <label>Nivel de Urgencia <span class="required">*</span></label>
+                <div class="urgency-selector">
+                  <label class="urgency-option urgency-low">
+                    <input type="radio" name="urgency" value="Bajo" checked />
+                    <span>Bajo 🟢</span>
+                  </label>
+                  <label class="urgency-option urgency-medium">
+                    <input type="radio" name="urgency" value="Medio" />
+                    <span>Medio 🟡</span>
+                  </label>
+                  <label class="urgency-option urgency-high">
+                    <input type="radio" name="urgency" value="Alto" />
+                    <span>Alto 🔴</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Geolocalización -->
+              <div class="form-group">
+                <label>Ubicación Geográfica <span class="required">*</span></label>
+                <div class="location-container">
+                  <button type="button" id="location-fetch-btn" class="form-btn secondary">📍 Obtener Ubicación</button>
+                  <div class="location-status" id="location-status-text">No localizada</div>
+                </div>
+                <input type="hidden" id="report-lat" />
+                <input type="hidden" id="report-lng" />
+              </div>
+
+              <!-- Descripción -->
+              <div class="form-group">
+                <label for="report-description">Descripción breve (opcional)</label>
+                <textarea id="report-description" rows="3" placeholder="Escribe detalles adicionales (ej. cerca al puente, olor fuerte, etc.)"></textarea>
+              </div>
+
+              <!-- Botones de Enviar -->
+              <div class="form-actions">
+                <button type="submit" class="form-btn primary">Enviar Reporte</button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Cola de reportes locales pendientes (offline) -->
+          <div id="offline-reports-box" class="offline-reports-box hidden">
+            <h3>Reportes Guardados Localmente (Pendientes de Envío)</h3>
+            <p>Se enviarán automáticamente cuando vuelva la conexión.</p>
+            <div class="offline-list" id="offline-reports-list"></div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 4: MAPA -->
+        <section id="screen-mapa" class="app-screen" aria-labelledby="title-mapa">
+          <div class="map-section-container">
+            <div class="map-controls">
+              <h2 id="title-mapa">Mapa de Incidencias Ambientales</h2>
+              <div class="map-filters">
+                <button id="btn-filter-all" class="filter-btn active">Todos</button>
+                <button id="btn-filter-eco" class="filter-btn">Ecopuntos</button>
+                <button id="btn-filter-reports" class="filter-btn">Reportes</button>
+                <button id="btn-toggle-heat" class="filter-btn highlight">Mapa de Calor 🔥</button>
+              </div>
+            </div>
+            
+            <!-- Contenedor del Mapa Leaflet -->
+            <div id="map" class="map-container" aria-label="Mapa interactivo de Rosaspata"></div>
+
+            <!-- Vista Comparativa Antes y Después para Resueltos -->
+            <div id="before-after-container" class="before-after-container hidden">
+              <h3>Comparativa: Antes y Después (Caso Resuelto)</h3>
+              <p id="before-after-title">Cargando caso...</p>
+              <div class="comparison-slider">
+                <div class="comparison-panel">
+                  <span class="comparison-badge red">Antes</span>
+                  <img id="img-before" src="" alt="Estado de contaminación inicial" />
+                </div>
+                <div class="comparison-panel">
+                  <span class="comparison-badge green">Después</span>
+                  <img id="img-after" src="" alt="Estado de limpieza resuelto" />
+                </div>
+              </div>
+              <button id="btn-close-comparison" class="form-btn secondary mini">Cerrar Comparación</button>
+            </div>
+
+            <!-- Panel Administrativo (Simple para Profesores / Municipio) -->
+            <div class="admin-panel">
+              <h3 class="admin-title">Panel Administrativo (Docentes / Municipio)</h3>
+              <p>Simulación de gestión escolar del proyecto.</p>
+              <div class="admin-controls">
+                <label for="admin-report-select">Seleccionar Reporte Activo:</label>
+                <select id="admin-report-select">
+                  <option value="" disabled selected>No hay reportes activos...</option>
+                </select>
+                
+                <div class="admin-actions-grid">
+                  <button id="admin-status-attending" class="form-btn secondary mini" disabled>Poner en Atención 🟡</button>
+                  <button id="admin-status-resolve" class="form-btn primary mini" disabled>Marcar como Resuelto (Limpiado) 🟢</button>
+                </div>
+                
+                <!-- Subida de foto después para resolver -->
+                <div id="admin-resolve-photo-box" class="admin-resolve-photo-box hidden">
+                  <label for="admin-after-file">Sube foto de la limpieza realizada:</label>
+                  <input type="file" id="admin-after-file" accept="image/*" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 5: APRENDE -->
+        <section id="screen-aprende" class="app-screen" aria-labelledby="title-aprende">
+          <h2 id="title-aprende" class="decorative-title">Aprende y Cuida el Altiplano</h2>
+          
+          <!-- Pestañas de Aprendizaje -->
+          <div class="aprende-tabs">
+            <button id="tab-btn-guides" class="aprende-tab-btn active">Guías y Consejos</button>
+            <button id="tab-btn-game1" class="aprende-tab-btn">Juego: Clasifica Basura</button>
+            <button id="tab-btn-game2" class="aprende-tab-btn">Quiz Ambiental</button>
+          </div>
+
+          <!-- Contenido 1: Guías y Consejos -->
+          <div id="aprende-content-guides" class="aprende-tab-content">
+            <div class="guides-grid" id="guides-container">
+              <!-- Cargado dinámicamente de CONFIG.tutorials -->
+            </div>
+          </div>
+
+          <!-- Contenido 2: Juego Clasifica Basura -->
+          <div id="aprende-content-game1" class="aprende-tab-content hidden">
+            <div class="game-card">
+              <h3>Juego: Clasificación Contra el Reloj ⏱️</h3>
+              <p>Clasifica los residuos en el contenedor correcto antes de que acabe el tiempo (30 segundos). ¡Gana Wiphalas Verdes!</p>
+              
+              <div class="game-hud">
+                <div>Tiempo: <strong id="game-time">30s</strong></div>
+                <div>Puntos: <strong id="game-score">0</strong></div>
+              </div>
+
+              <!-- Elemento a clasificar -->
+              <div class="game-item-display" id="game-item-box">
+                <span class="game-item-icon" id="game-item-icon">❓</span>
+                <span class="game-item-name" id="game-item-name">Cargando residuo...</span>
+              </div>
+
+              <!-- Contenedores -->
+              <div class="bins-grid">
+                <button class="bin-btn organic" data-bin="organic">
+                  <span class="bin-icon">🟢</span>
+                  <span class="bin-label">Orgánico</span>
+                </button>
+                <button class="bin-btn recyclable" data-bin="recyclable">
+                  <span class="bin-icon">🔵</span>
+                  <span class="bin-label">Aprovechable</span>
+                </button>
+                <button class="bin-btn general" data-bin="general">
+                  <span class="bin-icon">⚫</span>
+                  <span class="bin-label">No Aprovechable</span>
+                </button>
+                <button class="bin-btn hazardous" data-bin="hazardous">
+                  <span class="bin-icon">🔴</span>
+                  <span class="bin-label">Peligroso</span>
+                </button>
+              </div>
+
+              <button id="game-start-btn" class="form-btn primary">Iniciar Juego</button>
+            </div>
+          </div>
+
+          <!-- Contenido 3: Quiz Ambiental -->
+          <div id="aprende-content-game2" class="aprende-tab-content hidden">
+            <div class="quiz-card">
+              <h3>Cuestionario Ambiental de Rosaspata</h3>
+              <p>Demuestra cuánto sabes sobre ecología andina, bofedales y reciclaje.</p>
+              
+              <div id="quiz-game-container">
+                <div class="quiz-progress" id="quiz-progress-text">Pregunta 1 de 5</div>
+                
+                <div class="quiz-question-box">
+                  <h4 id="quiz-question-text">¿Pregunta?</h4>
+                  <div class="quiz-options" id="quiz-options-box">
+                    <!-- Cargadas dinámicamente -->
+                  </div>
+                </div>
+                
+                <div id="quiz-explanation-box" class="quiz-explanation hidden"></div>
+                
+                <button id="quiz-next-btn" class="form-btn primary hidden">Siguiente</button>
+              </div>
+
+              <div id="quiz-result-box" class="quiz-result hidden">
+                <h4>¡Cuestionario Completado!</h4>
+                <p id="quiz-score-text">Obtuviste 0 respuestas correctas de 5.</p>
+                <button id="quiz-restart-btn" class="form-btn secondary">Reiniciar Quiz</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANTALLA 6: COMUNIDAD -->
+        <section id="screen-comunidad" class="app-screen" aria-labelledby="title-comunidad">
+          <h2 id="title-comunidad" class="decorative-title">Participación y Mink'as</h2>
+          
+          <!-- Sistema de Gamificación e Insignias -->
+          <div class="badges-dashboard">
+            <h3>Mis Wiphalas Verdes (Insignias)</h3>
+            <div class="badges-progress">
+              <span class="badge-total-text">Total acumulado: <strong id="user-wiphalas">0</strong> 🟢</span>
+            </div>
+            
+            <div class="badges-grid" id="badges-container">
+              <div class="badge-item locked" id="badge-first-report">
+                <div class="badge-icon">🛡️</div>
+                <div class="badge-name">Primer Guardián</div>
+                <div class="badge-desc">Envía tu primer reporte.</div>
+              </div>
+              <div class="badge-item locked" id="badge-game-master">
+                <div class="badge-icon">⏱️</div>
+                <div class="badge-name">Clasificador Veloz</div>
+                <div class="badge-desc">Obtén 10 puntos en el minijuego.</div>
+              </div>
+              <div class="badge-item locked" id="badge-quiz-perfect">
+                <div class="badge-icon">🎓</div>
+                <div class="badge-name">Sabio del Altiplano</div>
+                <div class="badge-desc">Completa el Quiz sin fallar.</div>
+              </div>
+              <div class="badge-item locked" id="badge-minka-helper">
+                <div class="badge-icon">🤝</div>
+                <div class="badge-name">Colaborador Ayni</div>
+                <div class="badge-desc">Inscríbete en una faena Mink'a.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Faenas de Limpieza Mink'as -->
+          <div class="minkas-section">
+            <div class="minka-header-block">
+              <h3>Convocatoria de Mink'as (Faenas de Limpieza)</h3>
+              <button id="btn-open-create-minka" class="form-btn primary mini">Convocar Nueva</button>
+            </div>
+
+            <!-- Formulario Oculto de Nueva Minka -->
+            <form id="create-minka-form" class="standard-form hidden">
+              <h4>Convocar Nueva Faena de Limpieza</h4>
+              <div class="form-group">
+                <label for="minka-title">Título de la Faena <span class="required">*</span></label>
+                <input type="text" id="minka-title" required placeholder="Ej. Limpieza de totorales cerca al puerto" />
+              </div>
+              <div class="form-group">
+                <label for="minka-desc">Descripción <span class="required">*</span></label>
+                <textarea id="minka-desc" rows="2" required placeholder="Describe lo que se hará y materiales a llevar"></textarea>
+              </div>
+              <div class="form-group-grid">
+                <div class="form-group">
+                  <label for="minka-date">Fecha <span class="required">*</span></label>
+                  <input type="date" id="minka-date" required />
+                </div>
+                <div class="form-group">
+                  <label for="minka-time">Hora <span class="required">*</span></label>
+                  <input type="time" id="minka-time" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="minka-loc">Lugar de Encuentro <span class="required">*</span></label>
+                <input type="text" id="minka-loc" required placeholder="Ej. Puerto de Rosaspata" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="form-btn primary mini">Publicar Faena</button>
+                <button type="button" id="btn-cancel-minka" class="form-btn secondary mini">Cancelar</button>
+              </div>
+            </form>
+
+            <div class="minkas-list" id="minkas-list-container">
+              <!-- Cargado dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Ranking de Comunidades Limpias -->
+          <div class="ranking-section">
+            <h3>Ranking de Comunidades más Limpias (Huancané)</h3>
+            <ol class="ranking-list">
+              <li>
+                <span class="ranking-position">1</span>
+                <span class="ranking-name">Rosaspata Centro</span>
+                <span class="ranking-score">940 pts</span>
+              </li>
+              <li>
+                <span class="ranking-position">2</span>
+                <span class="ranking-name">Comunidad Tambillo</span>
+                <span class="ranking-score">820 pts</span>
+              </li>
+              <li>
+                <span class="ranking-position">3</span>
+                <span class="ranking-name">Comunidad Parcopata</span>
+                <span class="ranking-score">760 pts</span>
+              </li>
+              <li>
+                <span class="ranking-position">4</span>
+                <span class="ranking-name">Comunidad Llaulli</span>
+                <span class="ranking-score">690 pts</span>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <!-- PANTALLA 7: NOSOTROS / RÉPLICA -->
+        <section id="screen-nosotros" class="app-screen" aria-labelledby="title-nosotros">
+          <div class="about-card">
+            <h2 id="title-nosotros" class="decorative-title">Sobre el Proyecto</h2>
+            <p><strong>Ayllu Ariri</strong> es un proyecto innovador de emprendimiento social y ambiental creado por los estudiantes del <strong>4to Año Sección A de la I.E. Rosaspata</strong>, distrito de Rosaspata, provincia de Huancané, Puno, Perú.</p>
+            <p>Presentado para el <strong>Concurso de Crédito 2026</strong> con el propósito de conservar la Pachamama y proteger el ecosistema del lago Titicaca.</p>
+            
+            <div class="team-credits">
+              <h4>Asesor del Proyecto:</h4>
+              <p>Profesor Juan José Derecho</p>
+            </div>
+          </div>
+
+          <!-- Guía de Replicación para el Jurado -->
+          <div class="replication-card">
+            <h3>¿Cómo replicar este proyecto en tu comunidad?</h3>
+            <p>Este sistema está diseñado de forma modular. Para cambiar la ubicación de la escuela, las coordenadas del mapa, el glosario aymara, los ecopuntos y las guías, solo se requiere editar el archivo de configuración <code>config.js</code>.</p>
+            
+            <div class="replication-guide-steps">
+              <ol>
+                <li>Descarga el código del proyecto.</li>
+                <li>Modifica los campos del objeto <code>CONFIG</code> en <code>config.js</code>.</li>
+                <li>Sube los archivos a cualquier servidor web gratuito o úsalo de forma local en celulares.</li>
+              </ol>
+            </div>
+
+            <!-- Visor y Editor Modular en Pantalla -->
+            <div class="config-editor-box">
+              <h4>Editor de Configuración Rápido (Prueba en vivo)</h4>
+              <p>Cambia el nombre de la comunidad o escuela para ver cómo se actualiza la interfaz al instante.</p>
+              
+              <div class="form-group">
+                <label for="edit-config-community">Nombre de la Comunidad:</label>
+                <input type="text" id="edit-config-community" value="Rosaspata" />
+              </div>
+              <div class="form-group">
+                <label for="edit-config-school">Nombre de la Escuela:</label>
+                <input type="text" id="edit-config-school" value="I.E. Rosaspata" />
+              </div>
+              <button id="btn-apply-config" class="form-btn primary">Aplicar Cambios en Vivo</button>
+            </div>
+          </div>
+
+          <!-- Exportación de Métricas -->
+          <div class="export-card">
+            <h3>Exportar Métricas e Impacto del Proyecto</h3>
+            <p>Descarga la lista actual de reportes y las estadísticas de participación para presentarlas al municipio o al jurado evaluador.</p>
+            <div class="export-buttons">
+              <button id="btn-export-excel" class="form-btn secondary">📥 Descargar Reportes (Excel / CSV)</button>
+              <button id="btn-export-pdf" class="form-btn secondary">🖨️ Imprimir Resumen en PDF</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Barra de Navegación Inferior Persistente (Mobile-First) -->
+      <nav class="app-nav" role="navigation" aria-label="Menú principal">
+        <ul class="nav-list">
+          <li>
+            <button class="nav-item active" data-screen="inicio" aria-current="page">
+              <span class="nav-icon">🏠</span>
+              <span class="nav-label">Inicio</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="chatbot">
+              <span class="nav-icon">🤖</span>
+              <span class="nav-label">Ariri</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="reportar">
+              <span class="nav-icon">📝</span>
+              <span class="nav-label">Reportar</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="mapa">
+              <span class="nav-icon">📍</span>
+              <span class="nav-label">Mapa</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="aprende">
+              <span class="nav-icon">📚</span>
+              <span class="nav-label">Aprende</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="comunidad">
+              <span class="nav-icon">🤝</span>
+              <span class="nav-label">Ayni</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-screen="nosotros">
+              <span class="nav-icon">ℹ️</span>
+              <span class="nav-label">Nosotros</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      
+    </div>
+
+    <!-- Scripts de la Aplicación -->
+    <script src="config.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
